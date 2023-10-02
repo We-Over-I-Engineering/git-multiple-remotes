@@ -1,182 +1,59 @@
 # Git - Push to Multiple Remotes.
 
-Suppose you have a `startup` repository on Gitlab with a good number of branches and commits.
+Welcome to the guide on pushing code to multiple Git repositories hosted anywhere on the internet - from `Github` to `BitBucket` to `Gitlab` and more.
+
+The first and foremost step is to get accustomed to the terminology used in the guide. We primarily have five concepts and their flow can be visualized with the help of the following diagram:
 
 <p align="center">
-    <img width="750" src="./images/img-one.png">
+    <img width="550" src="./images/img-zero.png">
 </p>
 
-To work on this repository, you need to clone this repository to your machine. You can use the following command for the purpose, where you must replace `<url>` with the one for your repository.
+Except for two repositories at the top, everything else outlines the basic Git workflow when working with a remote repository. Since most of you have worked with Git in some capacity, I will not bore you with the details again. Nevertheless, if you want a refresher, follow this link or ping me in your free-time - no judgements, ofc.
 
-```
-git clone <url>
-```
+Coming back to the topic, the two differences from the usual workflow are the multiple remote repositories:
 
-In my case, I need to execute the following command in the folder I want to clone this repository.
+1. Startup Repository - The one where the production code for your startup is currently hosted (in context of the guide, GitLab).
 
-```
-git clone https://gitlab.com/mabdullah-woi/youvouch.git
-```
+2. Internal Repository - The one used by `We Over I` to manage internal PR reviews (in context of the guide, Github).
+
+Another important thing to note before starting off is that we use the following branching structure throughout the guide.
+
+- main
+- staging
+- dev
+
+The developers are required to create branches from the `dev` branch in order to make any changes to the code, and the changes are only integrated to `dev` through pull requests on both the `startup` repository and the `internal` repository.
 
 ---
 
-## Renaming Remote.
+## The Idea.
 
-Once you have cloned the repository, navigate to the repository from the terminal and execute the following command.
-
-```
-git remote -v
-```
-
-The output for the command should look something like the following, where you'd have an `origin` for fetching and pushing changes.
-
-<p align="center">
-    <img width="750" src="./images/img-two.png">
-</p>
-
-This `origin` points to the URL you used for cloning the repository - in other words, it refers to the `startup` repository.
-
-To avoid any inconveniences down the line, you should rename `origin` to `startup` before you move forward. Execute the following command for the purpose.
-
-```
-git remote rename origin startup
-```
-
-Now, if you execute `git remote -v` again, it would show something like the following.
-
-<p align="center">
-    <img width="750" src="./images/img-three.png">
-</p>
+`We Over I` intends to create a workflow where no changes are pushed to `startup` repository unless it has been reviewed by someone internally. However, since it is not feasible to get everyone added to each `startup` repository, the company intends to create `internal` repositories that are kept in sync with the `startup` repositories by following a set of steps.
 
 ---
 
-## Adding Another Remote.
+## Getting Started.
 
-Next up, you need to add another remote repository to the list of remotes. This would the `internal` remote repository and will be created for you beforehand.
+Now that you understand some terminology and the context behind this effort, you'd have a very legitimate question that goes like the following.
 
-For demonstration purposes, I have created one myself over on GitHub. Note that the name of the repository is slightly different from the original one - it should not pose a problem. Also, the repository is completely empty - no README, .gitignore etc.
+`"I have some 2000 commits and a multitude of branches, so how do I bring this record onto another repository? Oh, and also, how do I keep both these repos in sync overtime?"`
 
-<p align="center">
-    <img width="750" src="./images/img-four.png">
-</p>
-
-Copy the URL from the `Quick Setup` section and execute the following command after replacing `<url>` with the one for your repository.
-
-```
-git remote add internal <url>
-```
-
-In my case, I need to execute the following command.
-
-```
-git remote add internal https://github.com/mabdullah-woi/youvouch-internal.git
-```
-
-Now, if you execute `git remote -v`, it would show something like the following.
-
-<p align="center">
-    <img width="750" src="./images/img-five.png">
-</p>
+You will definitely find most your answers when you get some hands-on practice, but to get there, you must start by creating a carbon-copy of the existing repository with some 2000 commits and a multitude of branches. To undertake this action, please head to [configuring-remotes](guides/configuring-remotes.md) and follow the steps.
 
 ---
 
-## Fetching Startup Repository to Workspace.
+## Creating your First Pull Request on Internal.
 
-The next step is to fetch the complete `startup` repository from Gitlab to your `workspace`.
-
-First up, execute the following command to fetch all the branches from the `startup` repository to your `local` repository.
-
-```
-git fetch startup
-```
-
-You can confirm that all the branches were fetched by executing the following command.
-
-```
-git branch -r
-```
-
-In my case, I have three branches and `startup/HEAD` (remote HEAD pointer) points to `startup/main`.
-
-<p align="center">
-    <img width="750" src="./images/img-six.png">
-</p>
-
-These branches have been fetched to your `local` repository, but they have not been added to your `workspace` yet. So, if you were to list the branches in your workspace by executing `git branch`, you would see the following output.
-
-<p align="center">
-    <img width="750" src="./images/img-seven.png">
-</p>
-
-To create a new branch in your `workspace` for each branch in the `local` repository, execute the following command. Note that `HEAD` was pointing to `startup/main` in my case, so the command contains `"HEAD|main"`. If that is not the case for you, replace `main` with the branch your `HEAD` points to before executing.
-
-```
-for i in $(git branch -r | grep -vE "HEAD|main"); do git branch --track ${i#*/} $i; done
-```
-
-Once the execution finishes, list all the branches in your `workspace` by executing the following command again.
-
-```
-git branch
-```
-
-The output should now contain a branch for each listed in the output of `git branch -r` earlier, without the prefix `startup/`.
-
-<p align="center">
-    <img width="750" src="./images/img-eight.png">
-</p>
+The next step is to create your first pull request on the `internal` repository. To undertake this action, please head to [first-pull-request](guides/first-pull-request.md) and follow the steps.
 
 ---
 
-## Pushing Workspace to Internal Repository.
+## The Regular Workflow and Challenges.
 
-Currently, your `workspace` is in sync with the `startup` repository, but your `internal` repository is empty.
-
-<p align="center">
-    <img width="750" src="./images/img-nine.png">
-</p>
-
-To create a carbon-copy of the `startup` repository on your `internal` repository, you must push all the branches from `workspace` to the `internal` repository. Execute the following command for the purpose.
-
-```
-git push internal --all
-```
-
-Now, if you navigate to your `internal` repository again or refresh the Github page, you should see all your changes added to your `internal` repository.
-
-<p align="center">
-    <img width="750" src="./images/img-ten.png">
-</p>
+Creating your PR on the `internal` repository was the first part of the challenge. The next step requires you to dive deep into synchronizing both the codebases continuously upon changes. To understand how, please head to [the-regular-workflow](/guides/the-regular-workflow.md) and read through various cases.
 
 ---
 
-## Creating a Branch.
+## FAQs.
 
-Once you have the changes in sync on both the remotes, you can switch between branches with the following command.
-
-```
-git switch <name>
-```
-
-Say that I want to switch to `dev` and create a new branch from there to work on my latest tasks. I can execute the following commands to create a new branch named `feature/auth-otp` and switch to it.
-
-```
-git switch dev
-git branch feature/auth-otp
-git switch feature/auth-otp
-```
-
-Once I am done with the changes, I can add them to the staging area and commit them normally.
-
-```
-git add .
-git commit -m "Create authentication with OTP sent to email"
-```
-
-However, when I need to push the changes, I must push them to my `internal` repository only.
-
-```
-git push internal feature/auth-otp
-```
-
-Upon pushing the changes, I must create a PR from `feature/auth-otp` to `dev`, add some reviewers and ask them to merge my PR when they are satisfied with the changes.
+Please click [here](/FAQs.md) for FAQs.
